@@ -30,17 +30,18 @@ def invoke_method(method_path, arg):
     return f(*arg)
 
 class CMRequest:
-
     def __init__(self, fl_request):
         self.obj = fl_request.get_json(force=True, silent=True)
 
         if self.obj is None:
             raise InvalidJsonError
-
-        if 'jsonrpc' not in self.obj or self.obj['jsonrpc'] != '2.0':
-            raise InvalidRequestError
         
-        if 'method' not in self.obj:
+        try:
+            assert self.obj['jsonrpc'] == '2.0'
+            assert isinstance(self.obj['method'], str)
+            if 'params' in self.obj:
+                assert isinstance(self.obj['params'], list)
+        except Exception:
             raise InvalidRequestError
     
     def process(self):
@@ -48,5 +49,3 @@ class CMRequest:
             return invoke_method(self.obj['method'], self.obj['params'])
         else:
             return invoke_method(self.obj['method'], [])
-
-        
