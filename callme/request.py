@@ -1,7 +1,5 @@
 import importlib
 
-ROOT_MODULE = 'methods.root'
-
 class InvalidJsonError(Exception):
     pass
 
@@ -24,7 +22,7 @@ def parse_method(method_path):
 def invoke_method(method_path, arg):
     mod_path, method_name = parse_method(method_path)
 
-    mod = importlib.import_module(mod_path, ROOT_MODULE)
+    mod = importlib.import_module(mod_path, 'root')
     f = getattr(mod, method_name)
 
     return f(*arg)

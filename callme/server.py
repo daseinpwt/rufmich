@@ -1,12 +1,12 @@
 import importlib
 from flask import Flask
 from flask import request as fl_request
-from request import CMRequest, InvalidJsonError, InvalidRequestError
-from response import CMResponse
-from error import CMError
+from callme.request import CMRequest, InvalidJsonError, InvalidRequestError
+from callme.response import CMResponse
+from callme.error import CMError
+import sys
 
 app = Flask(__name__)
-
 @app.route("/callme", methods=['POST'])
 def callme():
     try:
@@ -29,5 +29,10 @@ def callme():
 
     return CMResponse(result=result, id=None)
 
-if __name__ == '__main__':
-    app.run(port=8080)
+class CMServer():
+    def load(self, path):
+        sys.path.insert(0, path)
+        return self
+    
+    def run(self, **kw):
+        app.run(**kw)
