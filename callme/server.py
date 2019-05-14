@@ -1,12 +1,15 @@
 import importlib
 from flask import Flask
 from flask import request as fl_request
-from callme.request import CMRequest, InvalidJsonError, InvalidRequestError
-from callme.response import CMResponse
-from callme.error import CMError
+from .request import CMRequest, InvalidJsonError, InvalidRequestError
+from .response import CMResponse
+from .error import CMError
 import sys
+import os
+import shutil
+import tempfile
 
-app = Flask(__name__)
+app = Flask('callme')
 @app.route("/callme", methods=['POST'])
 def callme():
     try:
@@ -30,9 +33,12 @@ def callme():
     return CMResponse(result=result, id=None)
 
 class CMServer():
-    def load(self, path):
-        sys.path.insert(0, path)
-        return self
+    def __init__(self, load_path):
+        self.load_path = load_path
     
     def run(self, **kw):
-        app.run(**kw)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            work_dir = os.path.join(temp_dir, 'methods')
+            shutil.copytree(self.load_path, work_dir)
+            sys.path.insert(0, work_dir)
+            app.run(**kw)
