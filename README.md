@@ -1,17 +1,15 @@
-# Callme
+# Rufmich
 A Python server implementaion of [JSON-RPC 2.0](https://www.jsonrpc.org/specification) over HTTP.
 
 ## Introduction
-**callme** implements the JSON-RPC 2.0 specification with a few minor changes:
+**rufmich** implements the JSON-RPC 2.0 specification with a few minor changes:
 1. The transport protocol is HTTP.
 2. A notification request will get an immediate response. Usually the server will start the procedure and return the response immediately (without having to wait for the procedure to finish). And there is no callback for the procedure, which means the client would not be aware of any errors.
 3. Method namespacing is supported (and recommended to be used).
 
 ## User Guide
 ### Installation
-`pip install callmex`
-
-*Note that there is an 'x' at the end.*
+`pip install rufmich`
 
 ### Define methods
 Create a folder with following structure:
@@ -48,8 +46,8 @@ Examples:
 
 ### Run
 ```python
-from callme.server import CMServer
+from rufmich.server import RMServer
 
-server = CMServer(load_path=<your_methods_workspace>)
+server = RMServer(load_path=<your_methods_workspace>)
 server.run(port=<port>)
 ```

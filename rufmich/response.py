@@ -1,7 +1,7 @@
 from flask import Response
 import json
 
-class CMResponse(Response):
+class RMResponse(Response):
     def __init__(self, result=None, error=None, id=None):
         obj = {'jsonrpc': '2.0'}
 

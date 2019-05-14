@@ -1,4 +1,4 @@
-class CMError(Exception):
+class RMError(Exception):
     def __init__(self, eid, message, data=None):
         self.obj = {
             'code': -32000 - eid,

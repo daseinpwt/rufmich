@@ -29,7 +29,7 @@ def invoke_method(method_path, arg):
 
     return f(*arg)
 
-class CMRequest:
+class RMRequest:
     def __init__(self, fl_request):
         self.obj = fl_request.get_json(force=True, silent=True)
 
