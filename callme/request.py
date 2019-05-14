@@ -8,6 +8,8 @@ class InvalidRequestError(Exception):
 
 def parse_method(method_path):
     tokens = method_path.split('::')
+    if tokens[0] == '':
+        tokens = tokens[1:]
 
     method_name = tokens[-1]
     if len(tokens) == 1:
