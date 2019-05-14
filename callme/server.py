@@ -1,4 +1,3 @@
-import importlib
 from flask import Flask
 from flask import request as fl_request
 from .request import CMRequest, InvalidJsonError, InvalidRequestError
