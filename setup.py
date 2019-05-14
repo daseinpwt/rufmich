@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="callmex",
-    version="0.0.6",
+    version="0.0.7",
     author="daseinpwt",
     author_email="daseinpwt@gmail.com",
     description="A Python server implementaion for JSON-RPC 2.0 over HTTP",
