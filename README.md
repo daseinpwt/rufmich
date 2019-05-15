@@ -2,8 +2,9 @@
 A Python server implementaion of [JSON-RPC 2.0](https://www.jsonrpc.org/specification) over HTTP.
 
 ## Introduction
-**rufmich** implements the JSON-RPC 2.0 specification with a few minor changes:
-1. The transport protocol is HTTP.
+**rufmich** is an HTTP server for JSON-RPC 2.0. To make the JSON-RPC 2.0 work over HTTP, following specifications are added:
+
+1. The transport protocol is HTTP. The response for an notification is an HTTP response with status code 204 (No Response) and empty content. The HTTP requests must have the header `content-type: application/json`, otherwise there will be an HTTP error 415 (Unsupported Media Type).
 2. A notification request will get an immediate response. Usually the server will start the procedure and return the response immediately (without having to wait for the procedure to finish). And there is no callback for the procedure, which means the client would not be aware of any errors.
 3. Method namespacing is supported (and recommended).
 
