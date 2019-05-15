@@ -1,7 +1,8 @@
 import importlib
-
-class InvalidJsonError(Exception):
-    pass
+from .response import RMResponse, RMResponseNone, RMResponseList
+from .error import RMError
+from multiprocessing.pool import ThreadPool
+import threading
 
 class InvalidRequestError(Exception):
     pass
@@ -27,25 +28,77 @@ def invoke_method(method_path, arg):
     mod = importlib.import_module(mod_path, 'root')
     f = getattr(mod, method_name)
 
-    return f(*arg)
+    if isinstance(arg, list):
+        return f(*arg)
+    elif isinstance(arg, dict):
+        return f(**arg)
+    else:
+        # <unpredicted error>
+        # if the arg bypassed the sanity check, its
+        # type should be list or dict
+        raise Exception
 
 class RMRequest:
     def __init__(self, fl_request):
         self.obj = fl_request.get_json(force=True, silent=True)
 
-        if self.obj is None:
-            raise InvalidJsonError
-        
-        try:
-            assert self.obj['jsonrpc'] == '2.0'
-            assert isinstance(self.obj['method'], str)
-            if 'params' in self.obj:
-                assert isinstance(self.obj['params'], list)
-        except Exception:
-            raise InvalidRequestError
-    
     def process(self):
-        if 'params' in self.obj:
-            return invoke_method(self.obj['method'], self.obj['params'])
+        if self.obj is None:
+            return RMResponse(error={'code': -32700, 'message': 'Parse error'}, id=None)
+
+        if isinstance(self.obj, list):
+            obj_list = self.obj
+            size = len(obj_list)
+            if size == 0:
+                return RMResponse(error={'code': -32600, 'message': 'Invalid Request'}, id=None)
+
+            pool = ThreadPool(size)
+            results = []
+            for obj in obj_list:
+                results.append(pool.apply_async(self.process_one, args=(obj,)))
+            pool.close()
+            pool.join()
+
+            results = [r.get() for r in results]
+            return RMResponseList(results)
         else:
-            return invoke_method(self.obj['method'], [])
+            return self.process_one(self.obj)
+
+    def process_one(self, obj):
+        try:
+            self.sanity_check(obj)
+
+            if 'id' in obj:
+                result = invoke_method(obj['method'], obj.get('params', []))
+                return RMResponse(result=result, id=obj['id'])
+            else:
+                # Notification
+                t = threading.Thread(target=invoke_method, args=(obj['method'], obj.get('params', [])))
+                t.start()
+                return RMResponseNone()
+
+        except InvalidRequestError:
+            return RMResponse(error={'code': -32600, 'message': 'Invalid Request'}, id=None)
+        except (ModuleNotFoundError, AttributeError):
+            return RMResponse(error={'code': -32601, 'message': 'Method not found'}, id=obj['id'])
+        except TypeError:
+            return RMResponse(error={'code': -32602, 'message': 'Invalid params'}, id=obj['id'])
+        except RMError as error:
+            return RMResponse(error=error.to_dict(), id=obj['id'])
+        except:
+            return RMResponse(error={'code': -32603, 'message': 'Internal error'}, id=None)
+
+    def sanity_check(self, obj):
+        try:
+            assert isinstance(obj, dict)
+            assert obj['jsonrpc'] == '2.0'
+            assert isinstance(obj['method'], str)
+            if 'params' in obj:
+                assert isinstance(obj['params'], list) \
+                    or isinstance(obj['params'], dict)
+            if 'id' in obj:
+                assert isinstance(obj['id'], str) \
+                    or isinstance(obj['id'], int) \
+                    or obj['id'] is None
+        except:
+            raise InvalidRequestError

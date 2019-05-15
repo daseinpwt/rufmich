@@ -1,15 +1,40 @@
 from flask import Response
 import json
 
+class RMResponseNone(Response):
+    def __init__(self):
+        super().__init__('')
+
 class RMResponse(Response):
-    def __init__(self, result=None, error=None, id=None):
-        obj = {'jsonrpc': '2.0'}
+    def __init__(self, result=None, error=None, id=None, empty=False):
+        self.obj = {'jsonrpc': '2.0'}
+        self.obj['id'] = id
 
         if error is None:
-            obj['result'] = result
-            obj['id'] = id
+            self.obj['result'] = result
         else:
-            obj['error'] = error
-            obj['id'] = None
+            self.obj['error'] = error
 
-        super().__init__(json.dumps(obj), mimetype='application/json')
+        super().__init__(json.dumps(self.obj), mimetype='application/json')
+
+    def to_dict(self):
+        return self.obj
+
+class RMResponseList(Response):
+    def __init__(self, response_list):
+        res = []
+        for response in response_list:
+            if isinstance(response, RMResponse):
+                res.append(response.to_dict())
+
+        if len(res) > 0:
+            super().__init__(json.dumps(res), mimetype='application/json')
+        else:
+            super().__init__('', mimetype='application/json')
+
+
+
+
+
+    
+        

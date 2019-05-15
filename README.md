@@ -5,7 +5,13 @@ A Python server implementaion of [JSON-RPC 2.0](https://www.jsonrpc.org/specific
 **rufmich** implements the JSON-RPC 2.0 specification with a few minor changes:
 1. The transport protocol is HTTP.
 2. A notification request will get an immediate response. Usually the server will start the procedure and return the response immediately (without having to wait for the procedure to finish). And there is no callback for the procedure, which means the client would not be aware of any errors.
-3. Method namespacing is supported (and recommended to be used).
+3. Method namespacing is supported (and recommended).
+
+### Notification
+Notificaiton is implemented using threading. A method without `id` will be invoked in a new thread.
+
+### Batch
+If multiple requests are sent in a batch, they will be processed concurrently by a thread pool.
 
 ## User Guide
 ### Installation
@@ -51,3 +57,6 @@ from rufmich.server import RMServer
 server = RMServer(load_path=<your_methods_workspace>)
 server.run(port=<port>)
 ```
+
+### Client examples
+Check on [the website of JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification#examples).
