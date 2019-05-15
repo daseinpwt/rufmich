@@ -12,7 +12,7 @@ app = Flask('rufmich')
 def rufmich():
     if fl_request.content_type != 'application/json':
         return Response('', status=415, content_type='application/json')
-        
+    
     request = RMRequest(fl_request)
     return request.process()
 

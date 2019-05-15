@@ -40,7 +40,7 @@ def invoke_method(method_path, arg):
 
 class RMRequest:
     def __init__(self, fl_request):
-        self.obj = fl_request.get_json(force=True, silent=True)
+        self.obj = fl_request.get_json(silent=True)
 
     def process(self):
         if self.obj is None:
