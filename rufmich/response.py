@@ -3,7 +3,7 @@ import json
 
 class RMResponseNone(Response):
     def __init__(self):
-        super().__init__('')
+        super().__init__('', status=204, mimetype='application/json')
 
 class RMResponse(Response):
     def __init__(self, result=None, error=None, id=None, empty=False):
@@ -30,7 +30,7 @@ class RMResponseList(Response):
         if len(res) > 0:
             super().__init__(json.dumps(res), mimetype='application/json')
         else:
-            super().__init__('', mimetype='application/json')
+            super().__init__('', status=204, mimetype='application/json')
 
 
 
