@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request as fl_request
+from flask import Response
 from .request import RMRequest
 import sys
 import os
@@ -9,6 +10,9 @@ import tempfile
 app = Flask('rufmich')
 @app.route("/rufmich", methods=['POST'])
 def rufmich():
+    if fl_request.content_type != 'application/json':
+        return Response('', status=415, content_type='application/json')
+        
     request = RMRequest(fl_request)
     return request.process()
 
