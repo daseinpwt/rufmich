@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="rufmich",
-    version="1.0.0",
+    version="1.0.2",
     author="daseinpwt",
     author_email="daseinpwt@gmail.com",
     description="A Python server implementaion of JSON-RPC 2.0 over HTTP",
