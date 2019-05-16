@@ -9,10 +9,10 @@ A Python server implementaion of [JSON-RPC 2.0](https://www.jsonrpc.org/specific
 3. Method namespacing is supported (and recommended).
 
 ### Notification
-Notification is implemented using threading. A method without `id` will be invoked in a new thread.
+Notification is implemented using threading. A method without `id` will be invoked asynchronously in a new thread and the client will get an HTTP response with status code 204 after the creation of the thread.
 
 ### Batch
-If multiple requests are sent in a batch, they will be processed concurrently by a thread pool.
+If multiple requests are sent in a batch, they will be processed concurrently by a thread pool. Only results of non-notification requests are returned. In case of that all the requests are notifications, the HTTP response will be of status 204.
 
 ## User Guide
 ### Installation
