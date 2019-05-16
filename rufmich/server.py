@@ -8,7 +8,7 @@ import shutil
 import tempfile
 
 app = Flask('rufmich')
-@app.route("/rufmich", methods=['POST'])
+
 def rufmich():
     if fl_request.content_type != 'application/json':
         return Response('', status=415, content_type='application/json')
@@ -20,7 +20,9 @@ class RMServer():
     def __init__(self, load_path):
         self.load_path = load_path
     
-    def run(self, **kw):
+    def run(self, endpoint='/', **kw):
+        app.add_url_rule(endpoint, 'rufmich', rufmich, methods=['POST'])
+
         with tempfile.TemporaryDirectory() as temp_dir:
             work_dir = os.path.join(temp_dir, 'methods')
             shutil.copytree(self.load_path, work_dir)
