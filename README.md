@@ -51,12 +51,26 @@ Examples:
 1. A method `foobar` defined in `root.py` is indexed to `"foobar"` and `"::foobar"`
 2. A method `send_code_to_email` defined in `by_email.py` in the above example is indexed to `"registration::by_email::send_code_to_email"` (and `"::registration::by_email::send_code_to_email"`)
 
+### Application-specific errors
+The error codes from -32000 to -32099 are reserved for implementation-defined server-errors. The RPC server developer can raise an application-specific error by using `RMError`:
+
+```python
+from rufmich.error import RMError
+
+def division(a, b):
+    if b == 0:
+        raise RMError(eid=0, message='divided by 0', data=[a, b])
+    return a / b
+```
+
+Each application-specific error should have an unique error id `eid` (0 <= eid <= 99). The error is mapped to [-32000, -32099] by the function `f: eid -> -32000-eid`.
+
 ### Run
 ```python
 from rufmich.server import RMServer
 
-server = RMServer(load_path=<your_methods_workspace>)
-server.run(port=<port>)
+server = RMServer(load_path='/workspace/methods')
+server.run(endpoint='/jsonrpc', port=8080)
 ```
 
 ### Client examples
