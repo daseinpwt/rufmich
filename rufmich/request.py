@@ -52,14 +52,14 @@ class RMRequest:
             if size == 0:
                 return RMResponse(error={'code': -32600, 'message': 'Invalid Request'}, id=None)
 
-            pool = ThreadPool(size)
             results = []
+            pool = ThreadPool(size)
             for obj in obj_list:
                 results.append(pool.apply_async(self.process_one, args=(obj,)))
             pool.close()
             pool.join()
-
             results = [r.get() for r in results]
+            
             return RMResponseList(results)
         else:
             return self.process_one(self.obj)
