@@ -1,4 +1,6 @@
 # Rufmich
+[![PyPI](https://img.shields.io/pypi/v/rufmich.svg)](https://pypi.python.org/pypi/rufmich)
+
 A Python server implementaion of [JSON-RPC 2.0](https://www.jsonrpc.org/specification) over HTTP.
 
 ## Introduction
